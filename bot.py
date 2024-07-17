@@ -201,5 +201,5 @@ async def imgC(ctx):
 
 
 
-bot.run("MTIxOTAxOTk5NDk1Mjg5NjYzMw.GAZ_NL.cANF7bPhvXNqs6u1RvxWq37f2mI5aX3X0Vf8DE")
+bot.run("copy of the token")
 
