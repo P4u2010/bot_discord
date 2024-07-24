@@ -77,6 +77,16 @@ class Music(commands.Cog):
 
         await channel.connect()
 
+    
+    @commands.command()
+    async def play_youtube(self, ctx, url):
+        """Reproduce un video de YouTube"""
+        async with ctx.typing():
+            player = await YTDLSource.from_url(url, loop=self.bot.loop)
+            ctx.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else None)
+        await ctx.send(f'Now playing: {player.title}')
+    
+    
     @commands.command()
     async def play(self, ctx, *, query):
         """Plays a file from the local filesystem"""
@@ -184,6 +194,26 @@ async def search_images(query):
     res = service.cse().list(q=query, cx=SEARCH_ENGINE_ID, searchType='image').execute()
     return res.get('items', [])
 
+@bot.command()
+async def play_youtube(ctx, url):
+    """Reproduce un video de YouTube"""
+    async with ctx.typing():
+        player = await YTDLSource.from_url(url, loop=bot.loop)
+        ctx.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else None)
+    await ctx.send(f'Now playing: {player.title}')
+
+UNSPLASH_ACCESS_KEY = "eWvz5ft-OTm5CUI1IPT2RA7VA2TUuPxQl5UfzMomHb0"
+UNSPLASH_SEARCH_URL = "https://api.unsplash.com/search/photos"
+
+async def search_images(query):
+    headers = {"Authorization": f"Client-ID {UNSPLASH_ACCESS_KEY}"}
+    params = {"query": query, "per_page": 1}  # Solo necesitamos la primera imagen
+    response = requests.get(UNSPLASH_SEARCH_URL, headers=headers, params=params)
+    response.raise_for_status()
+    search_results = response.json()
+    print(search_results)  # Añadir esta línea para depuración
+    return search_results.get('results', [])
+
 # Comando para buscar imágenes de contaminación ambiental
 @bot.command()
 async def imgC(ctx):
@@ -193,13 +223,11 @@ async def imgC(ctx):
         images = await search_images(query)
         if images:
             # Enviar la URL de la primera imagen encontrada
-            await ctx.send(images[0]['link'])
+            await ctx.send(images[0]['urls']["regular"])
         else:
             await ctx.send("No se encontraron imágenes.")
     except Exception as e:
         await ctx.send("Error al buscar imágenes.")
 
-
-
-bot.run("copy of the token")
+bot.run("copyofthetoken")
 
